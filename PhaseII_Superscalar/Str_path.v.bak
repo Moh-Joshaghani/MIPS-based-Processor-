@@ -1,0 +1,51 @@
+module Str_path (
+input  wire [31:0] Instr_Str,
+input  wire [31:0] InstrNO_Str,
+input  wire [31:0] R1_Str,
+input  wire [31:0] ROB_FAddr,
+input  wire 	      ROB_FSAddr,
+input  wire [31:0] ROB_Fvalue,
+input  wire 	      ROB_FSvalue,
+output reg         WE,
+output reg  [4:0]  AR1_Str,
+output wire [31:0] Addr_AG,
+output reg  [4:0]  Ar2_Str,
+input  wire [31:0] R2_Str,
+output reg  [31:0] store_data_AG
+);
+
+wire [15:0] Out_LOPP;
+wire 	      s_z;
+wire [31:0] Add1;
+wire [31:0] Add2;
+
+
+StrOPP Str_OPP(Instr_Str,InstrNO_Str,AR1_Str,Ar2_Str,WE,Out_LOPP,s_z);
+
+
+sign_zero_ext s_z_ext(
+.in(Out_LOPP),
+.out(Add1),
+.modee(s_z)
+);
+
+mux2_1 Mux_ADDG(
+.in_1(R1_Str), 
+.in_2(ROB_FAddr),
+.sel(ROB_FSAddr),
+.out(Add2)
+);
+
+mux2_1 Mux_Data(
+.in_1(R2_ALU), 
+.in_2(Imm_in),
+.sel(SrcBsel),
+.out(SrcB1)
+);
+
+
+
+
+assign strAddr_AG = Add1 + Add2;
+
+endmodule

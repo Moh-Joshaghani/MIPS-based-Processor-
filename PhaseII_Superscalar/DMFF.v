@@ -1,0 +1,30 @@
+`timescale 1ns/100ps
+module DMFF (
+input  wire [31:0] LdInstrNO_AG,
+input  wire [31:0] LdAddr_AG,
+input  wire [31:0] StrAddr_AG,
+input  wire        clk,
+input  wire 	   WE_AG,
+input  wire [31:0] store_data_AG,
+output reg  [31:0] WriteData_DM,
+output reg  [31:0] LdInstrNO_DM,
+output reg  [31:0] LdAddr_DM,
+output reg  [31:0] StrAddr_DM,
+output reg 	       WE_DM,
+output reg  [31:0] LdInstr_DM ,
+input  wire [31:0] LdInstr_AG
+);
+
+always@(posedge clk)
+begin
+	  LdInstrNO_DM = LdInstrNO_AG ;
+	  LdAddr_DM    = LdAddr_AG ;
+	  StrAddr_DM   = StrAddr_AG ;
+	  WE_DM        = WE_AG  ;
+	  WriteData_DM = store_data_AG  ;
+	  LdInstr_DM   = LdInstr_AG ;
+	  #2
+	  WE_DM = 1'b0;
+end
+
+endmodule

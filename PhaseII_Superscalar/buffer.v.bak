@@ -1,0 +1,34 @@
+module ALUBuffer(
+input clk,
+input wire [31:0] in1,
+input wire [31:0] in2,
+
+output reg [31:0] out1,
+output reg [31:0] out2,
+output reg  out1_ready,
+output reg out2_ready, 
+  );
+reg [31:0] buff [0:(1<<20)-1];  
+reg [20:0] buffer_load;  
+always@(posedge clk)
+begin
+out1_ready=0;
+out2_ready=0;
+if (buffer_load>0)
+  begin
+    out1_ready=1;
+    out1=buff[0];    
+    buffer_load = buffer_load -1;
+    if (buffer_load>0)
+      begin
+       out2_ready=1;
+       
+        
+      end
+   end
+
+
+end  
+  
+  
+endmodule

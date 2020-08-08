@@ -1,0 +1,410 @@
+/* 
+  -- cache nadaram
+
+*/
+`timescale 1ns/100ps
+module Control_Unit(
+
+input  wire [31:0] R1_ROB,
+input  wire [31:0] R2_ROB,
+input  wire        R1_stat,
+input  wire        R2_stat,
+input  wire [31:0] InstrD0,
+input  wire [31:0] InstrD1,
+input  wire [31:0] InstrD2,
+input  wire [31:0] InstrD3,
+input  wire [31:0] InstrD4,
+input  wire [31:0] InstrD5,
+input  wire [31:0] InstrD6,
+input  wire [31:0] InstrD7,
+
+input  wire        rst,
+input  wire        clk,
+
+input  wire        Strbuffer_ready,
+input  wire        Ldbuffer_ready,
+input  wire        ALUbuffer_ready,
+
+
+//_____________________ROB signals:
+output reg  [31:0] Sent_Instr0,
+output reg  [31:0] Sent_Instr1,
+output reg  [31:0] Sent_Instr2,
+output reg  [31:0] Instr_NO0,
+output reg  [31:0] Instr_NO1,
+output reg  [31:0] Instr_NO2,
+
+
+output reg  [4:0] AR1_CU2ROB,
+output reg  [4:0] AR2_CU2ROB,
+output reg  [31:0] InstrNO_bc0,
+output reg  [31:0] InstrNO_bc1,
+
+//_____________________ ALU signals
+output reg [31:0] ALU_Instr,
+output reg [31:0] ALU_InstrNO,
+output reg        ALU_DR,
+//_____________________ load signals
+output reg [31:0] Ld_Instr,
+output reg [31:0] Ld_InstrNO,
+output reg        Ld_DR,
+//______________________ Store signals
+output reg [31:0] Str_Instr,
+output reg [31:0] Str_Instr_NO,
+output reg        Str_DR,
+
+//______________________ Regfile signals
+output reg  [4:0] AR1_CU2RF,
+output reg  [4:0] AR2_CU2RF, 
+
+output wire [31:0] next_PC0, //FF is nope
+output wire [31:0] next_PC1,
+output wire [31:0] next_PC2,
+output wire [31:0] next_PC3,
+output wire [31:0] next_PC4,
+output wire [31:0] next_PC5,
+output wire [31:0] next_PC6,
+output wire [31:0] next_PC7,
+output reg   		chk,
+output reg			new_PC,
+input  wire [31:0] PC_0,
+input  wire [31:0] PC_1,
+input  wire [31:0] PC_2,
+input  wire [31:0] PC_3,
+input  wire [31:0] PC_4,
+input  wire [31:0] PC_5,
+input  wire [31:0] PC_6,
+input  wire [31:0] PC_7
+);
+
+//------------------------------------
+reg [31:0] Reg_fu [0:31] ;
+reg waiting_for_instr;
+reg [31:0] icache_pc;
+reg [5:0] iii;
+reg [31:0] Instr_NO;
+reg [31:0] last_instr; //?????????? bayad andaze cache beshe
+reg [5:0] OP;
+
+//instruction related vars
+reg [31:0] temp_instr [0:7] ;
+reg [31:0] temp_temp_instr;
+reg [7:0] done_instr;
+reg [2:0] sent_IC;
+
+// jump related variables:
+reg jump;
+integer  Icounter,i1;
+integer  jump_indx;
+reg execute_jump; //pc ro bayad taghir bedim age in 1 beshe
+reg checked_jump;
+reg ok_jump;
+
+
+
+// Pc related parts
+reg [31:0] PC [0:7];
+assign next_PC0 = PC[0];
+assign next_PC1 = PC[1];
+assign next_PC2 = PC[2];
+assign next_PC3 = PC[3];
+assign next_PC4 = PC[4];
+assign next_PC5 = PC[5];
+assign next_PC6 = PC[6];
+assign next_PC7 = PC[7];
+
+always@(posedge clk)
+begin
+  if (rst)
+       begin
+         for(i1=0;i1<31;i1=i1+1)
+		 	 Reg_fu[i1] = 32'b0;
+		 	 icache_pc = 32'haaaaaaaa;
+		 	 iii = icache_pc[31-:6];
+         checked_jump=1'b0;
+         jump_indx =8;
+         jump=1'b0;
+         done_instr=8'b0;
+    //     TI_A= 3'b0;
+
+         ok_jump=1'b0;
+         Instr_NO=32'b0;
+         last_instr=32'b0;
+         waiting_for_instr=1'b1;
+         PC[0]=32'b000;
+         PC[1]=32'b100;
+         PC[2]=32'b1000;
+         PC[3]=32'b1100;
+         PC[4]=32'b10000;
+         PC[5]=32'b10100;
+         PC[6]=32'b11000;     
+         PC[7]=32'b11100; 
+         ALU_DR=1'b0;    
+         Str_DR=1'b0;    
+         Ld_DR = 1'b0;
+         new_PC = 1'b1;
+       end // if 102
+ else// rst
+     begin
+    if (waiting_for_instr)
+         begin
+         
+             waiting_for_instr=1'b0;  
+             new_PC = 1'b0;
+         			 #0.8
+             temp_instr[0] = InstrD0;       
+             temp_instr[1] = InstrD1;       
+             temp_instr[2] = InstrD2;       
+             temp_instr[3] = InstrD3;       
+             temp_instr[4] = InstrD4;       
+             temp_instr[5] = InstrD5;       
+             temp_instr[6] = InstrD6;       
+             temp_instr[7] = InstrD7;       
+			 PC[0] = PC_0;
+			 PC[1] = PC_1;
+			 PC[2] = PC_2;
+			 PC[3] = PC_3;
+			 PC[4] = PC_4;
+			 PC[5] = PC_5;
+			 PC[6] = PC_6;
+			 PC[7] = PC_7;
+             
+         end // if 127
+//--------------------------------------  
+//sending instructions to the buffers          
+if(!waiting_for_instr) // !waiting
+begin
+//#1:  checking and sending instructions
+      
+        for (Icounter=0;Icounter<jump_indx;Icounter=Icounter+1)
+        begin
+            #1
+    /*        if (OP == 6'b101010 || OP == 6'b101011 )
+              begin
+                Instr_NO = Instr_NO ||  32'hffffffff;                 
+			end */
+			    temp_temp_instr = temp_instr [Icounter]; 
+                OP = temp_temp_instr [31:26];
+				if(temp_temp_instr == 32'b0) 
+					done_instr[Icounter] = 1'b1;
+				else
+				begin	
+            if (done_instr[Icounter] ==0 && ALUbuffer_ready && Strbuffer_ready && Ldbuffer_ready)// be komake in dige jumpi ke ye bar anjam nashode pardazesh nemishe
+            begin
+                temp_temp_instr = temp_instr [Icounter]; 
+                OP = temp_temp_instr [31:26];
+				if(temp_temp_instr == 32'b0) 
+					done_instr[Icounter] = 1'b1;
+                //____ ALU instrs
+                if (OP==6'b0 ||OP==6'b001000 ||OP==6'b001001 ||OP==6'b000110 ||OP==6'b001011 
+                      ||OP==6'b001100|| OP==6'b001101 ||OP==6'b001110 ||OP==6'b001111) 
+                begin
+                     if (ALUbuffer_ready)
+                     begin
+                        	{ALU_Instr,ALU_InstrNO,ALU_DR,Ld_DR,Str_DR,Sent_Instr0,Instr_NO0} = 
+                             {temp_instr[Icounter],Instr_NO,1'b1,1'b0,1'b0,temp_instr[Icounter],Instr_NO};  
+                         done_instr[Icounter] = 1'b1; 
+                         Instr_NO = Instr_NO + 1'b1 ;   
+							
+							if (OP == 6'b0)
+								Reg_fu[temp_instr [Icounter][15:11]] = Instr_NO -1 ;
+							else if (OP != 6'b101011)
+								Reg_fu[temp_instr [Icounter][20:16]] = Instr_NO -1 ;
+                     end
+                end
+                
+                //_________ be instr
+              if (OP == 6'b000100 && jump ==1'b0)
+              begin
+                jump = 1'b1;
+                jump_indx = Icounter;				        
+               done_instr[jump_indx] = 1'b1; 
+                Icounter = temp_instr [jump_indx][25:21];
+            				InstrNO_bc0 = Reg_fu[Icounter];
+            				Icounter = temp_instr [jump_indx][20:16];
+            				InstrNO_bc1 = Reg_fu[Icounter];
+            				Icounter = 10;
+              end
+            //_________ bne instr
+              if (OP == 6'b000101 && jump == 1'b0)
+              begin
+                jump = 1'b1;
+                jump_indx = Icounter;
+			        
+               done_instr[jump_indx] = 1'b1; 
+                Icounter = temp_instr [jump_indx][25:21];
+            				InstrNO_bc0 = Reg_fu[Icounter];
+            				Icounter = temp_instr [jump_indx][20:16];
+            				InstrNO_bc1 = Reg_fu[Icounter];
+            				Icounter = 10;
+              end               
+                  	
+    //*******************
+               if(OP == 6'b101011) //sw
+               begin
+
+                    if (Strbuffer_ready)
+                    begin  
+                        	{Str_Instr,Str_Instr_NO,ALU_DR,Ld_DR,Str_DR,Sent_Instr1,Instr_NO1} = 
+                             {temp_instr[Icounter],Instr_NO,1'b0,1'b0,1'b1,temp_instr[Icounter],Instr_NO};  
+                         done_instr[Icounter]=1'b1;
+                         Instr_NO = Instr_NO +1;  
+                         
+                  	 end
+                  	 
+              end  	 
+              if (OP==6'b100011) //lw
+              begin
+
+                    if (Ldbuffer_ready)
+                    begin  
+                        	{Ld_Instr,Ld_InstrNO,ALU_DR,Ld_DR,Str_DR,Sent_Instr2,Instr_NO2} = 
+                           {temp_instr[Icounter],Instr_NO,1'b0,1'b1,1'b0,temp_instr[Icounter],Instr_NO};  
+                          done_instr[Icounter]=1'b1;
+                          Instr_NO = Instr_NO +1;  
+						  Reg_fu[temp_instr [Icounter][20:16]] = Instr_NO -1 ;
+						      
+                  	 end
+              end
+              
+            end //if done_instr
+          end// else
+         end //for 
+		
+		if (done_instr == 8'hff && jump==1'b0)			/////////////////////////aodhfoaf-3948027430927402874234
+		begin
+			waiting_for_instr = 1'b1; 
+			PC[0] = PC[7] + 4;
+			PC[1] = PC[0] + 4;
+			PC[2] = PC[1] + 4;
+			PC[3] = PC[2] + 4;
+			PC[4] = PC[3] + 4;
+			PC[5] = PC[4] + 4;
+			PC[6] = PC[5] + 4;
+			PC[7] = PC[6] + 4;		
+			done_instr = 8'b0;
+			new_PC = 1'b1;
+			
+		end
+  
+  
+  
+    // instr : 31..26 = OP , 25..21 R0 , 16..20 R1, 15..0 offset;
+    //----#2 : checking if jump is taken or not
+    if (jump==1'b1 && checked_jump==1'b0)
+    begin
+			
+			execute_jump=1'b0;
+			temp_temp_instr = temp_instr [jump_indx]; 
+            OP = temp_temp_instr[31:26];
+            AR1_CU2ROB  = temp_temp_instr [25:21];
+            AR2_CU2ROB  = temp_temp_instr [20:16];
+      			chk = 1'b1;
+            #0.1;
+            if (R1_stat ==1 && R2_stat==1)
+            begin
+				//AR1_CU2ROB = 5'bxxxxx ;
+				//AR2_CU2ROB = 5'bxxxxx ;
+         checked_jump =1'b1;
+				AR1_CU2RF = AR1_CU2ROB;
+				AR2_CU2RF = AR2_CU2ROB;
+				#0.1
+               // be or bne, this is the problem
+                if (OP == 6'b000100)
+                begin
+//                      temp_R1_ROBR1_ROB = 
+                      if (R1_ROB == R2_ROB)
+                      begin
+                           execute_jump =1;
+                      end
+                end
+
+                 if (OP == 6'b000101)
+                  begin
+                      if (R1_ROB != R2_ROB)
+                      begin
+                           execute_jump =1;
+                      end                       
+                  end 
+                                   
+            end// 
+			chk = 1'b0;
+			
+			/*			else
+			begin
+			
+				#1
+				AR2_CU2ROB = 5'bxxxxx ;
+							
+			end	 */
+    end // if 148
+//--------------------------------------------------
+//applying detected jump;
+if (jump ==1 && checked_jump==1)
+begin
+  
+  if (execute_jump==1'b1)
+  begin
+           
+  
+        
+       
+            ok_jump=1'b0;
+            jump=1'b0;
+            execute_jump=1'b0;
+            temp_temp_instr = temp_instr[jump_indx];
+			
+			checked_jump = 1'b0;
+            waiting_for_instr = 1'b1;
+			
+      
+            done_instr = 8'b0;
+           
+		
+				PC[0] = $signed(PC[jump_indx]) + $signed((temp_temp_instr[15:0])<<2) + $signed(4'b0100);
+				PC[1] = PC[0] + 3'b100;
+				PC[2] = PC[1] + 3'b100;
+				PC[3] = PC[2] + 3'b100;
+				PC[4] = PC[3] + 3'b100;
+				PC[5] = PC[4] + 3'b100;
+				PC[6] = PC[5] + 3'b100;
+				PC[7] = PC[6] + 3'b100;
+			new_PC = 1'b1;
+			
+            jump_indx = 8;
+        
+  end     
+  else // !execute_jump
+  begin
+    jump=0;
+	checked_jump = 1'b0;
+	//done_instr[jump_indx] = 1'b1;
+    jump_indx = 8;
+  end
+    
+  end // else 147
+  
+  
+
+
+
+
+
+
+
+          
+        
+//    end//if !jump     
+end // else !waiting
+
+
+
+end //else rst  
+  
+end //always
+
+
+
+
+endmodule
+

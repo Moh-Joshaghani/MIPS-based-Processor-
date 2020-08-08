@@ -1,0 +1,112 @@
+module InstrCache (
+ input  wire        clk, 
+ input  wire        rst,
+ input  wire [31:0] InstrD0,
+ input  wire [31:0] InstrD1,
+ input  wire [31:0] InstrD2,
+ input  wire [31:0] InstrD3,
+ input  wire [31:0] InstrD4,
+ input  wire [31:0] InstrD5,
+ input  wire [31:0] InstrD6,
+ input  wire [31:0] InstrD7,
+ 
+ input  wire WE0,
+ input  wire WE1,
+ input  wire WE2,
+ input  wire WE3,
+ input  wire WE4,
+ input  wire WE5,
+ input  wire WE6,
+ input  wire WE7,
+ 
+ input  wire [31:0] AW, //instruction write start address (to flush some cache addresses)
+
+ input  wire [31:0] Ar_DU, //
+  
+ 
+ output wire [31:0] Instr0
+  
+  );
+  
+parameter cache_size=4096; 
+reg [31:0] icache [0:cache_size];  
+reg  [31:0] start_wa;
+
+
+// **seding instruction to departure unit
+assign Instr0 = (Ar_DU > start_wa)? 32'b0:icache[Ar_DU[31:2]];  
+
+  
+  
+  
+  
+always@ (posedge clk) 
+begin
+  if (rst)
+    begin
+      start_wa =0;      
+    end
+
+else //(rst)
+  begin
+// *********************************** write data in cache 
+    if(WE0)
+      begin
+        icache[start_wa[31:2]] = InstrD0;
+        start_wa = start_wa+4;       
+      end
+      
+    if(WE1)
+      begin
+        icache[start_wa[31:2]] = InstrD1;
+        start_wa = start_wa+4;       
+      end 
+      
+    if(WE2)
+      begin
+        icache[start_wa[31:2]] = InstrD2;
+        start_wa = start_wa+4;       
+      end 
+
+    if(WE3)
+      begin
+        icache[start_wa[31:2]] = InstrD3;
+        start_wa = start_wa+4;       
+      end 
+
+    if(WE4)
+      begin
+        icache[start_wa[31:2]] = InstrD4;
+        start_wa = start_wa+4;       
+      end 
+
+    if(WE5)
+      begin
+        icache[start_wa[31:2]] = InstrD5;
+        start_wa = start_wa+4;       
+      end 
+
+    if(WE6)
+      begin
+        icache[start_wa[31:2]] = InstrD6;
+        start_wa = start_wa+4;       
+      end 
+
+    if(WE7)
+      begin
+        icache[start_wa[31:2]] = InstrD7;
+        start_wa = start_wa+4;       
+      end 
+
+
+
+   
+    
+  end // else rs
+  
+  
+end// always
+
+  
+  
+endmodule

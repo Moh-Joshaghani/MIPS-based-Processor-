@@ -1,0 +1,38 @@
+module Ld_path (
+input  wire [31:0] Instr_Ld,
+input  wire [31:0] InstrNO_Ld,
+input  wire [31:0] R1_Ld,
+input  wire [31:0] ROB_forwAddr,
+input  wire 	      ROB_forwselAddr,
+
+
+output reg  [4:0]  AR1_Ld,
+output wire [31:0] Addr_AG
+);
+
+wire [15:0] Out_LOPP;
+wire 	      s_z;
+wire [31:0] Add1;
+wire [31:0] Add2;
+
+
+LoadOPP Load_OPP(Instr_Ld,InstrNO_Ld,AR1_Ld,Out_LOPP,s_z)
+);
+
+sign_zero_ext s_z_ext(
+.in(Out_LOPP),
+.out(Add1),
+.modee(s_z)
+);
+mux2_1 Mux_ADDG(
+.in_1(R2_ALU), 
+.in_2(Imm_in),
+.sel(SrcBsel),
+.out(SrcB1)
+);
+
+assign Addr_AG = Add1 + Add2;
+
+
+
+endmodule

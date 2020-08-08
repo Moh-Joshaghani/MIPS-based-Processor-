@@ -1,0 +1,16 @@
+module Buffer(
+input clk,
+input wire [31:0] in1,
+input wire [31:0] in2,
+input wire [31:0] in3,
+input wire [31:0] in4,
+
+output reg [31:0] out1,
+output reg [31:0] out2,
+output reg [31:0] out3,
+output reg [31:0] out4,
+  
+  );
+  
+  
+endmodule

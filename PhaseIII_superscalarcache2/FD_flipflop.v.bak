@@ -1,0 +1,68 @@
+module FD_flipflop (
+ input  wire        clk,
+ input  wire        CLR,
+ input  wire        EN,
+ 
+ input  wire [31:0] InstrF0,
+ input  wire [31:0] InstrF1,
+ input  wire [31:0] InstrF2,
+ input  wire [31:0] InstrF3,
+ input  wire [31:0] InstrF4,
+ input  wire [31:0] InstrF5,
+ input  wire [31:0] InstrF6,
+ input  wire [31:0] InstrF7,
+ 
+ output reg [31:0] InstrD0,
+ output reg [31:0] InstrD1,
+ output reg [31:0] InstrD2,
+ output reg [31:0] InstrD3,
+ output reg [31:0] InstrD4,
+ output reg [31:0] InstrD5,
+ output reg [31:0] InstrD6,
+ output reg [31:0] InstrD7,
+ /*
+ output reg [31:0] PC0,
+ output reg [31:0] PC1,
+ output reg [31:0] PC2,
+ output reg [31:0] PC3,
+ output reg [31:0] PC4,
+ output reg [31:0] PC5,
+ output reg [31:0] PC6,
+ output reg [31:0] PC7  */
+ );
+//----------------------------------------  
+  
+always@(posedge clk)
+begin
+  
+  if (EN)
+  begin
+    
+    if (CLR)
+      begin
+        InstrD0<=32'b0;
+        InstrD1<=32'b0;
+        InstrD2<=32'b0;
+        InstrD3<=32'b0;
+        InstrD4<=32'b0;
+        InstrD5<=32'b0;
+        InstrD6<=32'b0;
+        InstrD7<=32'b0;        
+
+      end
+    else 
+      begin
+        InstrD0<=InstrF0;
+        InstrD1<=InstrF1;
+        InstrD2<=InstrF2;
+        InstrD3<=InstrF3;
+        InstrD4<=InstrF4;
+        InstrD5<=InstrF5;
+        InstrD6<=InstrF6;
+        InstrD7<=InstrF7;
+
+      end
+  end
+ end//EN
+  
+endmodule

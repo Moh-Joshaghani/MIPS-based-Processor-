@@ -1,0 +1,111 @@
+module DepartureUnit (
+ input  wire [31:0] InstrD0,  
+ input  wire [31:0] InstrD1,  
+ input  wire [31:0] InstrD2,  
+ input  wire [31:0] InstrD3,  
+ 
+ output reg [31:0] instr00,
+ output reg [31:0] instr01,
+ output reg [31:0] instr02,
+ output reg [31:0] instr03,
+
+
+  
+
+  
+ output reg [2:0] instr_count0, 
+ output reg [2:0] instr_count1, 
+ output reg [2:0] instr_count2, 
+ output reg [2:0] instr_count3, 
+  
+ output reg [31:0] Ar0,Ar1,Ar2,Ar3 
+  );
+  
+  
+always@(*)
+begin
+ if (InstrD0 == 32'b0)
+   begin
+   instr00 = InstrD0;
+   instr_count0=instr_count0+1; 
+  end
+  else if (InstrD0 == 32'b1)
+   begin
+   instr01 = InstrD0;
+   instr_count1=instr_count1+1; 
+  end
+   else if (InstrD0 == 32'h00000002)
+   begin
+   instr01 = InstrD2;
+   instr_count2=instr_count1+1; 
+  end
+   else if (InstrD0 == 32'h3)
+   begin
+   instr01 = InstrD3;
+   instr_count3=instr_count1+1; 
+  end
+  
+  if (InstrD1 == 32'b0)
+   begin
+   instr00 = InstrD0;
+   instr_count0=instr_count0+1; 
+  end
+  else if (InstrD1 == 32'b1)
+   begin
+   instr01 = InstrD0;
+   instr_count1=instr_count1+1; 
+  end
+   else if (InstrD1 == 32'h2)
+   begin
+   instr01 = InstrD2;
+   instr_count2=instr_count1+1; 
+  end
+   else if (InstrD1 == 32'h3)
+   begin
+   instr01 = InstrD3;
+   instr_count3=instr_count1+1; 
+  end
+  
+  if (InstrD2 == 32'b0)
+   begin
+   instr00 = InstrD0;
+   instr_count0=instr_count0+1; 
+  end
+  else if (InstrD2 == 32'b1)
+   begin
+   instr01 = InstrD0;
+   instr_count1=instr_count1+1; 
+  end
+   else if (InstrD2 == 32'h2)
+   begin
+   instr01 = InstrD2;
+   instr_count2=instr_count1+1; 
+  end
+   else if (InstrD2 == 32'h3)
+   begin
+   instr01 = InstrD3;
+   instr_count3=instr_count1+1; 
+  end
+  
+  if (InstrD3 == 32'b0)
+   begin
+   instr00 = InstrD0;
+   instr_count0=instr_count0+1; 
+  end
+  else if (InstrD3 == 32'b1)
+   begin
+   instr01 = InstrD0;
+   instr_count1=instr_count1+1; 
+  end
+   else if (InstrD3 == 32'h2)
+   begin
+   instr01 = InstrD2;
+   instr_count2=instr_count1+1; 
+  end
+   else if (InstrD3 == 32'h3)
+   begin
+   instr01 = InstrD3;
+   instr_count3=instr_count1+1; 
+  end
+  
+endmodule  

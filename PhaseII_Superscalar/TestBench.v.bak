@@ -1,0 +1,158 @@
+`timescale 100ps/1ps
+
+
+module TestBench;
+
+
+reg [31:0] InstrD0;
+reg [31:0] InstrD1;
+reg [31:0] InstrD2;
+reg [31:0] InstrD3;
+reg [31:0] InstrD4;
+reg [31:0] InstrD5;
+reg [31:0] InstrD6;
+reg [31:0] InstrD7;
+reg [31:0] ALU_InstrNO; 
+reg        Strbuffer_ready;
+reg        Loadbuffer_ready;
+reg        ALUbuffer_ready;
+
+// generating clock
+reg clk;
+reg rst;
+initial 
+begin
+ clk = 0;
+ #2 rst=1;
+ #102 rst=0;
+   InstrD0=32'h34080000;
+   InstrD1=32'h24090060;
+   InstrD2=32'h3403DEAD;
+   InstrD3=32'h00631020;
+   InstrD4=32'hAD030080;
+   InstrD5=32'h00631020;
+   InstrD6=32'h1409FFF9;
+   InstrD7=32'h00631020;
+#100 ALUbuffer_ready=1'b1;
+Loadbuffer_ready=1'b1;
+Strbuffer_ready=1'b1;
+/* #1 ALU_DR=1'b1;
+ #5 
+
+ #10 ALU_DR=1'b0; */
+end  
+always @(*)
+begin
+ clk <=#50 ~clk;
+end
+
+//----
+  wire [31:0] R1_ROB;
+  wire [31:0] R2_ROB;
+  wire        R1_stat;
+  wire        R2_stat;
+
+
+
+
+
+//_____________________ROB signals:
+ wire  [31:0] Sent_Instr0;
+ wire  [31:0] Sent_Instr1;
+ wire  [31:0] Sent_Instr2;
+ wire  [31:0] Sent_Instr3;
+ wire  [31:0] Inst_NO0;
+ wire  [31:0] Inst_NO1;
+ wire  [31:0] Inst_NO2;
+ wire  [31:0] Inst_NO3;
+
+ wire  [31:0] AR1_ROB;
+ wire  [31:0] AR2_ROB;
+
+//_____________________ALU signals
+ wire [31:0] ALU_Instr;
+ wire [31:0] ALU_Instr_NO;
+ wire        ALU_DR;
+//_____________________load signals
+ wire [31:0] Load_Instr;
+ wire [31:0] Load_Instr_NO;
+ wire        Load_DR;
+//______________________Store signals
+ wire [31:0] Str_Instr;
+ wire [31:0] Str_Instr_NO;
+ wire        Str_DR;
+
+
+ wire [31:0] next_PC0; //FF is nope
+ wire [31:0] next_PC1;
+ wire [31:0] next_PC2;
+ wire [31:0] next_PC3;
+ wire [31:0] next_PC4;
+ wire [31:0] next_PC5;
+ wire [31:0] next_PC6;
+ wire [31:0] next_PC7 ;
+
+
+Control_Unit CU(
+R1_ROB,
+R2_ROB,
+R1_stat,
+R2_stat,
+InstrD0,
+InstrD1,
+InstrD2,
+InstrD3,
+    InstrD4,
+    InstrD5,
+    InstrD6,
+    InstrD7,
+
+          rst,
+          clk,
+
+          Strbuffer_ready,
+          Loadbuffer_ready,
+          ALUbuffer_ready,
+
+  Sent_Instr0,
+  Sent_Instr1,
+  Sent_Instr2,
+  Sent_Instr3,
+  Inst_NO0,
+  Inst_NO1,
+  Inst_NO2,
+  Inst_NO3,
+
+  AR1_ROB,
+  AR2_ROB,
+
+
+ ALU_Instr,
+ ALU_Instr_NO,
+ALU_DR,
+
+ Load_Instr,
+ Load_Instr_NO,
+       Load_DR,
+
+ Str_Instr,
+ Str_Instr_NO,
+       Str_DR,
+
+
+next_PC0,
+next_PC1,
+next_PC2,
+next_PC3,
+next_PC4,
+next_PC5,
+next_PC6,
+next_PC7
+
+);
+
+
+
+
+
+endmodule

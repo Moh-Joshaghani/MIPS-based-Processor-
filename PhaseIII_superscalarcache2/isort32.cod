@@ -1,0 +1,32 @@
+[0x000000]	0x34080000	# ori $t0, $zero, 0 ($t0 = $zero | 0)
+[0x000004]	0x24090060	# addiu $t1, $zero, 96 ($t1 = 96)
+[0x000008]	0x3403DEAD	# ori $v1, $zero, -8531 ($v1 = $zero | -8531)
+[0x00000C]	0xAD030080	# sw $v1, 128($t0) (mem[$t0 + 128] = $v1)
+[0x000010]	0x2129FFFF	# addi $t1, $t1, -1 ($t1 = $t1 + -1) 4
+[0x000014]	0x25080004	# addiu $t0, $t0, 4 ($t0 = $t0 + 4) 5 - 11 = b
+[0x000018]	0x00631020	# add $v0, $v1, $v1 ($v0 = $v1 + $v1) 6
+[0x00001C]	0x00621026	# xor $v0, $v1, $v0 ($v0 = $v1 ^ $v0) 7
+[0x000020]	0x3843BEEF	# xori $v1, $v0, -16657 ($v1 = $v0 ^ -16657) 
+[0x000024]	0x1409FFF9	# bne $t1, $zero, -7 (if ($t1 != $zero) goto -7)
+[0x000028]	0x20080004	# addi $t0, $zero, 4 ($t0 = 4)
+[0x00002C]	0x20090060	# addi $t1, $zero, 96 ($t1 = 96)
+[0x000030]	0x01294821	# addu $t1, $t1, $t1 ($t1 = $t1 + $t1)
+[0x000034]	0x01294821	# addu $t1, $t1, $t1 ($t1 = $t1 + $t1)
+[0x000038]	0x0109502A	# slt $t2, $t0, $t1 (if ($t0 < $t1) $t2 = 1 else $t2 = 0)
+[0x00003C]	0x1140000E	# beq $t2, $zero, 14 (if ($t2 == $zero) goto 14)
+[0x000040]	0x00085820	# add $t3, $zero, $t0 ($t3 = $t0)
+[0x000044]	0x8D0C0080	# lw $t4, 128($t0) ($t4 = mem[$t0 + 128])
+[0x000048]=	0x000B502A	# slt $t2, $zero, $t3 (if ($zero < $t3) $t2 = 1 else $t2 = 0)
+[0x00004C]	0x11400007	# beq $t2, $zero, 7 (if ($t2 == $zero) goto 7)
+[0x000050]	0x216DFFFC	# addi $t5, $t3, -4 ($t5 = $t3 + -4)
+[0x000054]	0x8DAE0080	# lw $t6, 128($t5) ($t6 = mem[$t5 + 128])
+[0x000058]	0x01CC502B	# sltu $t2, $t6, $t4 (if ($t6 < $t4) $t2 = 1 else $t2 = 0)
+[0x00005C]	0x11400003	# beq $t2, $zero, 3 (if ($t2 == $zero) goto 3)
+[0x000060]	0xAD6E0080	# sw $t6, 128($t3) (mem[$t3 + 128] = $t6)
+[0x000064]=	0x000D5820	# add $t3, $zero, $t5 ($t3 = $t5)
+[0x000068]	0x1000FFF7	# beq $zero, $zero, -9 (if ($zero == $zero) goto -9)
+[0x00006C]	0xAD6C0080	# sw $t4, 128($t3) (mem[$t3 + 128] = $t4)
+[0x000070]	0x21080004	# addi $t0, $t0, 4 ($t0 = $t0 + 4)
+[0x000074]	0x1000FFF0	# beq $zero, $zero, -16 (if ($zero == $zero) goto -16)
+[0x000078]	0x1000FFFF	# beq $zero, $zero, -1 (if ($zero == $zero) goto -1)
+

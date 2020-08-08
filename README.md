@@ -9,3 +9,13 @@ sort the numbers. The duration of the program is measured.
 
 After the 3rd phase, the speed of execution of the code improved by a factor of 2.22.
 
+
+## PHASE I
+The MIPS based architecture block diagram is as follows:
+
+![MIPS block diagram](PhaseI_MIPS/Screen Shot 2016-10-02 at 7.30.23 PM.png)
+
+## PHASE II
+The customized processor block diagram is as follows:
+![customized block diagram](PhaseII_Superscalar/Doku/block diagram.png)
+

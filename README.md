@@ -13,7 +13,7 @@ After the 3rd phase, the speed of execution of the code improved by a factor of 
 ## PHASE I
 The MIPS based architecture block diagram is as follows:
 
-<img  align="center" src="./PhaseI_MIPS/Screen Shot 2016-10-02 at 7.30.23 PM.png" width="500" height="400"/>
+<img  align="center" src="./PhaseI_MIPS/Screen Shot 2016-10-02 at 7.30.23 PM.png" width="900" height="400"/>
 
 <br>
 <br>
@@ -26,6 +26,6 @@ The MIPS based architecture block diagram is as follows:
 ## PHASE II
 The customized processor block diagram is as follows:
 
-<img  align="left" src="./PhaseII_Superscalar/Doku/block diagram.png" width="500" height="400"/>
+<img  align="left" src="./PhaseII_Superscalar/Doku/block diagram.png" width="1000" height="800"/>
 
 
